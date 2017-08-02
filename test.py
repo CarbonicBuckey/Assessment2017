@@ -1,54 +1,58 @@
 from tkinter import *
 
-class initialise():
-    def __init__(self, windowName=None):
-        self.window = Tk()
-        self.window.title(windowName)
+class windowSetup():
+    def __init__(self):
+        self.window = Tk()  # Defining window
 
-    def gameStart(self):
-        print(self.modeVar.get())
+        self.sideFrame = Frame()  # Defining side frame
 
-    def sideMenu(self):
-        sideFrame = Frame(self.window)
+        self.modeVar = IntVar()  # Defining the variable that will be changed by the radio buttons
+        self.modeVar.set(0)  # Setting default value of mode to round
 
-        modeLabel = Label(sideFrame, text="What mode would you like?")
-        self.modeVar = IntVar()
+        self.addVar = IntVar()  # Defining the variable that will be changed by the check buttons
+        self.subVar = IntVar()
+        self.multVar = IntVar()
 
-        modeButton1 = Radiobutton(sideFrame, text="Unlimited", variable=self.modeVar, value=1)
-        modeButton2 = Radiobutton(sideFrame, text="RoundBased", variable=self.modeVar, value=2)
+        # Creating the labels
+        modeLabel = Label(self.sideFrame, text="Mode: ")
+        questionLabel = Label(self.sideFrame, text="Question Type: ")
 
-        startButton = Button(text="Start", command=self.gameStart)
+        # Creating the radio buttons
+        roundRadio = Radiobutton(self.sideFrame, text="Round Mode", variable=self.modeVar, value=0)
+        unlimitedRadio = Radiobutton(self.sideFrame, text="Unlimited Mode", variable=self.modeVar, value=1)
+
+        # Creating the check buttons
+        addCheck = Checkbutton(self.sideFrame, text="addition", variable=self.addVar)
+        subCheck = Checkbutton(self.sideFrame, text="subtraction", variable=self.subVar)
+        multCheck = Checkbutton(self.sideFrame, text="multiplication", variable=self.multVar)
+
+        # Start buttons
+        startButton = Button(self.sideFrame, text="Start", width=16, bg="#00ff00")
+
+        # Creating the canvas
+        self.canvas = Canvas(self.window, width=600, height=600, bg=None)
+
+        # Packing everything
+        modeLabel.pack(anchor=W)
+        roundRadio.pack(anchor=W)
+        unlimitedRadio.pack(anchor=W)
+
+        questionLabel.pack(anchor=W)
+        addCheck.pack(anchor=W)
+        subCheck.pack(anchor=W)
+        multCheck.pack(anchor=W)
+
         startButton.pack()
 
-        modeLabel.pack()
-        modeButton1.pack(anchor=W, side=BOTTOM)
-        modeButton2.pack(anchor=W)
+        self.sideFrame.pack(side=RIGHT)
+        self.canvas.pack(side=LEFT)
 
-        sideFrame.pack()
+    def welcome(self):
+        self.canvas.config(bg="#aaddff")
+        self.canvas.create_text(300, 150, text="Welcome to Quickfire Maths", font="Ascii 30 bold", fill="#0011dd")
+        self.canvas.create_text(300, 400, text="θ", font="Ascii 200 italic", fill="#55aaff")
 
-window = initialise("Quickfire Maths")
-window.sideMenu()
+window1 = windowSetup()
+window1.welcome()
 
-window.window.mainloop()
-
-"""
-class windowSetup():
-    def __init__(self, window, width=500, height=500, colour="#00aaff"):
-        self.canvas = Canvas(window, width=width, height=height, bg=colour)
-        self.canvas.pack()
-
-    def startUp(self):
-        self.canvas.delete()
-
-        self.canvas.create_text(250, 100, text="Welcome To Quickfire Math", font="Avenir 25 bold", fill="#ffff00")
-
-        self.canvas.create_text(250, 250, text="θ", font="Avenir 120 italic", fill="#3333ff")
-
-        self.canvas.create_rectangle(75, 400, 425, 450, fill="#ffff00")
-        self.canvas.create_text(250, 425, text="Click to Play!", font="Avenir 20")
-
-        self.canvas.bind("<>")
-
-    def modeSelect(self):
-        self.canvas.delete()
-"""
+window1.window.mainloop()
