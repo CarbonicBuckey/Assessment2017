@@ -13,6 +13,11 @@ class windowSetup():
         self.subVar = IntVar()
         self.multVar = IntVar()
 
+        #Everything on by default
+        self.addVar.set(1)
+        self.subVar.set(1)
+        self.multVar.set(1)
+
         # Creating the labels
         modeLabel = Label(self.sideFrame, text="Mode: ")
         questionLabel = Label(self.sideFrame, text="Question Type: ")
@@ -27,7 +32,7 @@ class windowSetup():
         multCheck = Checkbutton(self.sideFrame, text="multiplication", variable=self.multVar)
 
         # Start buttons
-        startButton = Button(self.sideFrame, text="Start", width=16, bg="#00ff00")
+        startButton = Button(self.sideFrame, text="Start", width=16, bg="#00ff00", command=self.start)
 
         # Creating the canvas
         self.canvas = Canvas(self.window, width=600, height=600, bg=None)
@@ -51,6 +56,13 @@ class windowSetup():
         self.canvas.config(bg="#aaddff")
         self.canvas.create_text(300, 150, text="Welcome to Quickfire Maths", font="Ascii 30 bold", fill="#0011dd")
         self.canvas.create_text(300, 400, text="θ", font="Ascii 200 italic", fill="#55aaff")
+
+    def start(self):
+        print(self.modeVar.get())
+
+        print(self.addVar.get())
+        print(self.subVar.get())
+        print(self.multVar.get())
 
 window1 = windowSetup()
 window1.welcome()
