@@ -75,11 +75,11 @@ class windowSetup():
 
 class questionCalc(windowSetup):
     def __init__(self, addVar, subVar, multVar):
-        typeList = [addVar, subVar, multVar]
-        qCheck = 0
+        self.typeList = [addVar, subVar, multVar]
+        self.qCheck = 0
 
     def nextGame(self):
-        print("a")
+        print(self.typeList, self.qCheck)
 
 window1 = windowSetup()
 window1.welcome()
