@@ -58,11 +58,28 @@ class windowSetup():
         self.canvas.create_text(300, 400, text="θ", font="Ascii 200 italic", fill="#55aaff")
 
     def start(self):
-        print(self.modeVar.get())
+        modeVar = self.modeVar.get()
 
-        print(self.addVar.get())
-        print(self.subVar.get())
-        print(self.multVar.get())
+        addVar = self.addVar.get()
+        subVar = self.subVar.get()
+        multVar = self.multVar.get()
+
+        game = questionCalc(addVar, subVar, multVar)
+
+        if modeVar == 0:
+            for n in range(10):
+                game.nextGame()
+        else:
+            while 1:
+                game.nextGame()
+
+class questionCalc(windowSetup):
+    def __init__(self, addVar, subVar, multVar):
+        typeList = [addVar, subVar, multVar]
+        qCheck = 0
+
+    def nextGame(self):
+        print("a")
 
 window1 = windowSetup()
 window1.welcome()
