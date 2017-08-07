@@ -1,4 +1,5 @@
 from tkinter import *
+from math import *
 
 class windowSetup():
     def __init__(self):
@@ -85,3 +86,6 @@ window1 = windowSetup()
 window1.welcome()
 
 window1.window.mainloop()
+
+print(log(3, 10))
+print(e)
