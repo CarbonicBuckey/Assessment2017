@@ -1,0 +1,20 @@
+Quick fire question program.
+
+User has to tick what type of questions he/she wants
+#Dependent on age change difficulty?
+
+#Scoreboard?
+
+Modes:
+	Unlimited
+	Scored
+
+Question types:
+	Must ensure that at least one question from each of the ticked catagories are available
+	
+	Addition
+		Limited to 0..99, 0..99, ans range of 0..198
+	Subtraction
+		Limited to 10..99, 5..98 where fNumber > secondNumber. ans range of 0..94
+	Multiplication
+	Limited to single digit multiplication. ans range of 0..81

@@ -1,91 +1,146 @@
 from tkinter import *
-from math import *
+from random import choice, randint
 
 class windowSetup():
     def __init__(self):
-        self.window = Tk()  # Defining window
+        self.window = Tk()
+        self.welcomeScreen()
 
-        self.sideFrame = Frame()  # Defining side frame
+    def welcomeScreen(self):
+        self.radioFrame = Frame(self.window)  # Creating frame to house radio buttons
+        self.checkFrame = Frame(self.window)  # Creting frame ot house check buttons
 
-        self.modeVar = IntVar()  # Defining the variable that will be changed by the radio buttons
-        self.modeVar.set(0)  # Setting default value of mode to round
+        modeLabel = Label(self.radioFrame, text="Please choose your mode", font="Ascii 20 bold")
+        typeLabel = Label(self.checkFrame, text="Please choose the types of questions", font="Ascii 20 bold")
 
-        self.addVar = IntVar()  # Defining the variable that will be changed by the check buttons
-        self.subVar = IntVar()
-        self.multVar = IntVar()
-
-        #Everything on by default
-        self.addVar.set(1)
-        self.subVar.set(1)
-        self.multVar.set(1)
-
-        # Creating the labels
-        modeLabel = Label(self.sideFrame, text="Mode: ")
-        questionLabel = Label(self.sideFrame, text="Question Type: ")
-
-        # Creating the radio buttons
-        roundRadio = Radiobutton(self.sideFrame, text="Round Mode", variable=self.modeVar, value=0)
-        unlimitedRadio = Radiobutton(self.sideFrame, text="Unlimited Mode", variable=self.modeVar, value=1)
-
-        # Creating the check buttons
-        addCheck = Checkbutton(self.sideFrame, text="addition", variable=self.addVar)
-        subCheck = Checkbutton(self.sideFrame, text="subtraction", variable=self.subVar)
-        multCheck = Checkbutton(self.sideFrame, text="multiplication", variable=self.multVar)
-
-        # Start buttons
-        startButton = Button(self.sideFrame, text="Start", width=16, bg="#00ff00", command=self.start)
-
-        # Creating the canvas
-        self.canvas = Canvas(self.window, width=600, height=600, bg=None)
-
-        # Packing everything
         modeLabel.pack(anchor=W)
-        roundRadio.pack(anchor=W)
-        unlimitedRadio.pack(anchor=W)
+        typeLabel.pack(anchor=W)
 
-        questionLabel.pack(anchor=W)
-        addCheck.pack(anchor=W)
-        subCheck.pack(anchor=W)
-        multCheck.pack(anchor=W)
+        self.settingButtons = buttonSetup()
+        self.settingButtons.radioButton(self.radioFrame, 1, LEFT, W, 'Round Mode', 'Unlimited')
+        self.settingButtons.checkButton(self.checkFrame, LEFT, W, addition=1, subtraction=1, multiplication=1)
 
-        startButton.pack()
+        self.radioFrame.grid(row=0, column=0, sticky=W, pady=10)
+        self.checkFrame.grid(row=1, column=0, sticky=W, pady=10)
 
-        self.sideFrame.pack(side=RIGHT)
-        self.canvas.pack(side=LEFT)
+        startButton = Button(text="Start", font="Ascii 20 bold", command=self.start, width=20)
+        startButton.grid(row=2, column=0)
 
-    def welcome(self):
-        self.canvas.config(bg="#aaddff")
-        self.canvas.create_text(300, 150, text="Welcome to Quickfire Maths", font="Ascii 30 bold", fill="#0011dd")
-        self.canvas.create_text(300, 400, text="θ", font="Ascii 200 italic", fill="#55aaff")
+    def questionScreen(self, question):
+        canvas1 = Canvas(height=300, width=300)
+        questionLabel = Label(text=question, font="ascii 50 bold")
+        answerInput = Entry(width=20)
+
+        questionWindow = canvas1.create_window(150, 100, window=questionLabel)
+        inputWindow = canvas1.create_window(100, 200, window=answerInput)
+
+        canvas1.pack()
+
+    def clear(self):
+        for objects in self.window.winfo_children():
+            objects.destroy()
 
     def start(self):
-        modeVar = self.modeVar.get()
+        setting = self.settingButtons.results()
 
-        addVar = self.addVar.get()
-        subVar = self.subVar.get()
-        multVar = self.multVar.get()
+        if 1 not in setting[1].values():
+            try:
+                self.errorLabel.pack()
 
-        game = questionCalc(addVar, subVar, multVar)
+            except:
+                self.errorLabel = Label(self.checkFrame, text="You must choose at least one", foreground="#ff0000")
+                self.errorLabel.pack()
 
-        if modeVar == 0:
-            for n in range(10):
-                game.nextGame()
         else:
+            question = questionSetup(setting[1])
+
+            if setting[0] == 1:
+                for n in range(10):
+                    question.questionDecider()
+                    self.clear()
+                    self.questionScreen(question)
+
+
+            elif setting[0] == 2:
+                while 1:
+                    question.questionDecider()
+                    self.clear()
+                    self.questionScreen(question)
+
+class questionSetup():
+    def __init__(self, setting):
+        # Adding variables to list if they have value of 1
+        self.sList = [variable for variable in setting if setting[variable]]
+        self.atLeastOne = []  # List to make sure that all question types are asked at least once
+
+    def questionDecider(self):
+        if len(self.atLeastOne) != len(self.sList):  # Checking to see if there are any types that have not been asked
             while 1:
-                game.nextGame()
+                nextQuestion = choice(self.sList) # Randomly choosing a quesiton type
+                if nextQuestion in self.atLeastOne:  # Checking to see if question type has been asked
+                    continue  # If yes, generate new question
+                self.atLeastOne.append(nextQuestion) # If not, add the question type ot the list of asked questions
+                break  # Stop generating questions
 
-class questionCalc(windowSetup):
-    def __init__(self, addVar, subVar, multVar):
-        self.typeList = [addVar, subVar, multVar]
-        self.qCheck = 0
+        else:
+            nextQuestion = choice(self.sList)  # If all the questions were asked at least once generate random question
 
-    def nextGame(self):
-        print(self.typeList, self.qCheck)
+        # Calling appropriate functions
+        if nextQuestion == "addition":
+            self.addCreator()
+        elif nextQuestion == "subtraction":
+            self.subCreator()
+        elif nextQuestion == "multiplication":
+            self.multCreator()
 
-window1 = windowSetup()
-window1.welcome()
 
-window1.window.mainloop()
+    def addCreator(self):
+        self.question = "{} + {}".format(randint(10, 99), randint(2, 99))
 
-print(log(3, 10))
-print(e)
+    def subCreator(self):
+        firstNumber = randint(10, 99)
+        while 1:
+            secondNumber = randint(5, 98)
+            if secondNumber >= firstNumber:
+                continue
+            break
+        self.question = "{} - {}".format(firstNumber, secondNumber)
+
+    def multCreator(self):
+        self.question = "{} * {}".format(randint(1, 9), randint(1, 9))
+
+    def __str__(self):
+        return(self.question)
+
+class buttonSetup():
+    def radioButton(self, window, default=0, side=None, anchor=E, *varList):
+        self.rButtonDict = {}
+        self.rVar = IntVar()
+        self.rVar.set(default)
+
+        for n, variable in enumerate(varList):
+            self.rButtonDict[variable] = Radiobutton(window, text=variable, variable=self.rVar, value=n+1)
+            self.rButtonDict[variable].pack(side=side, anchor=anchor)
+
+    def checkButton(self, window, side=None, anchor=E, **varList):
+        self.varList = varList
+        self.cButtonDict = {}
+        self.cButtonDictVar = {}
+
+        for variable in varList:
+            self.cButtonDictVar[variable] = IntVar()
+            self.cButtonDictVar[variable].set(varList[variable])
+            self.cButtonDict[variable] = Checkbutton(window, text=variable, variable=self.cButtonDictVar[variable])
+            self.cButtonDict[variable].pack(side=side, anchor=anchor)
+
+    def results(self):
+        mResults = self.rVar.get()
+        cResults = {}
+
+        for variable in self.varList:
+            cResults[variable] = self.cButtonDictVar[variable].get()
+
+        return(mResults, cResults)
+
+
+windowSetup().window.mainloop()
