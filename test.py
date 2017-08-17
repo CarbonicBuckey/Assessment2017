@@ -56,7 +56,7 @@ class windowSetup():
 
             if setting[0] == 1:
                 for n in range(10):
-                    question.questionDecider()
+                    print(question.questionDecider())
                     self.clear()
                     self.questionScreen(question)
 
