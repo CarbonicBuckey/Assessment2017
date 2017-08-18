@@ -61,11 +61,12 @@ class windowSetup():
 
         ########## questionScreen() WIDGETS ##########
         self.inputBox = Entry(self.window, width=10, font="Courier 30")
+        self.inputVar = IntVar()
         self.inputButton = Button(self.window,
                                   bg="#7ad7ff", relief=GROOVE,
                                   text="SUBMIT", font="Courier 20",
                                   width=10,
-                                  command=self.answerScreen
+                                  command=lambda: self.inputVar.set(self.inputBox.get())
                                   )
 
         ########## answerScreen() WIDGETS ##########
@@ -82,8 +83,9 @@ class windowSetup():
             if self.modeVar.get() == 1:
                 for x in range(10):
                     question=process.questionCaller()
-                    print(question)
                     self.questionScreen(question)
+                    self.inputButton.wait_variable(self.inputVar)
+                    self.answerScreen()
 
     def welcomeScreen(self):  # method to display the welcome screen
         self.canvas.delete("all")  # Clear the screen
