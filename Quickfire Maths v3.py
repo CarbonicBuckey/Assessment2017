@@ -3,6 +3,7 @@ from random import choice, randint
 
 class windowSetup():
     def __init__(self):
+        ########## General Stuff ##########
         self.window = Tk()
         self.window.config()
         self.window.title("Quick Fire Maths")
@@ -10,16 +11,17 @@ class windowSetup():
         self.canvas = Canvas(self.window, width=600, height=600)  # Creating a canvas
         self.canvas.pack()
 
+        # Importing image for welcome screen, question screen, and final screen
+        self.bImage = PhotoImage(file="welcome_screen.gif")
+
         self.quitButton = Button(self.window,
-                                bg="#ff0000", relief=GROOVE,
-                                text="Quit", font="Courier 20",
-                                width=10,
-                                command=sys.exit
+                                bg="#ff2222", relief=GROOVE,
+                                text="Quit", font="Courier 15",
+                                width=4,
+                                command=self.window.destroy
                                 )
 
         ########## welcomeScreen() Stuff ##########
-        self.bImage = PhotoImage(file="welcome_screen.gif")  # Importing the image
-
         self.rFrame = Frame(self.window, bg="#7ad7ff")  # Making the frame in which the radio buttons and their label will reside
         self.cFrame = Frame(self.window, bg="#7ad7ff")  # Making the frame in which the check buttons and their label will reside
 
@@ -77,6 +79,9 @@ class windowSetup():
                                   )
 
         ########## answerScreen() WIDGETS ##########
+        self.correctImage = PhotoImage(file="correct_screen.gif")
+        self.falseImage = PhotoImage(file="false_screen.gif")
+
         self.nextVar = IntVar()
         self.nextButton = Button(self.window,
                                   bg="#7ad7ff", relief=GROOVE,
@@ -84,6 +89,7 @@ class windowSetup():
                                   width=10,
                                   command=lambda: self.nextVar.set(1)
                                   )
+
         ########## finalScreen() WIDGETS ##########
         self.restartButton = Button(self.window,
                                   bg="#7ad7ff", relief=GROOVE,
@@ -105,8 +111,8 @@ class windowSetup():
         self.canvas.create_window(300, 300, window=self.rFrame)  # Displaying the radio buttons
         self.canvas.create_window(300, 400, window=self.cFrame)  # Displaying the check buttons
 
-        self.canvas.create_window(300, 500, window=self.startButton)  # Displaying the start button
-        self.canvas.create_window(500, 550, window=self.quitButton)
+        self.canvas.create_window(300, 490, window=self.startButton)  # Displaying the start button
+        self.canvas.create_window(560, 570, window=self.quitButton)
 
     def questionScreen(self, question, questionNo):
         """
@@ -121,9 +127,9 @@ class windowSetup():
         self.canvas.create_text(300, 250, text=question, font="Courier 50 italic", fill="#00ff00")
 
         self.canvas.create_window(300, 400, window=self.inputBox)  # Creating the entry button
-        self.canvas.create_window(300, 500, window=self.inputButton)  # Creating the button to move on
+        self.canvas.create_window(300, 490, window=self.inputButton)  # Creating the button to move on
 
-        self.canvas.create_window(500, 550, window=self.quitButton)
+        self.canvas.create_window(560, 570, window=self.quitButton)
 
 
     def answerScreen(self, question, uInput, correct):
@@ -133,20 +139,25 @@ class windowSetup():
         """
         self.canvas.delete("all")  # Clear the screen
 
+        colour=None
+
         if correct:
-            self.canvas.create_image(300, 300, image=self.bImage)  # Displaying correct image
+            self.canvas.create_image(300, 300, image=self.correctImage)  # Displaying correct image
             self.canvas.create_text(300, 50, text="You Were Right!", font="Courier 30 italic")
+            colour = "#9effb0"
         else:
-            self.canvas.create_image(300, 300, image=self.bImage)  # Displaying incorrect image
+            self.canvas.create_image(300, 300, image=self.falseImage)  # Displaying incorrect image
             self.canvas.create_text(300, 50, text="You Were Wrong!", font="Courier 30 italic")
+            colour = "#ff9ead"
 
         self.canvas.create_text(300, 250, text="Question: {}".format(question), font="Courier 30 italic")
 
-        self.canvas.create_text(300, 400, text="Your Input: {}".format(uInput), font="Courier 30 italic")
-        self.canvas.create_text(300, 450, text="Answer: {}".format(eval(question)), font="Courier 30 italic")
+        self.canvas.create_text(300, 350, text="Your Input: {}".format(uInput), font="Courier 30 italic")
+        self.canvas.create_text(300, 400, text="Answer: {}".format(eval(question)), font="Courier 30 italic")
 
-        self.canvas.create_window(300, 500, window=self.nextButton)
-        self.canvas.create_window(500, 550, window=self.quitButton)
+        self.nextButton.config(bg=colour)
+        self.canvas.create_window(300, 490, window=self.nextButton)
+        self.canvas.create_window(560, 570, window=self.quitButton)
 
     def finalScreen(self, score, totalQuestions):
         """
@@ -160,53 +171,49 @@ class windowSetup():
 
         self.canvas.create_text(300, 350, text="{}/{}".format(score, totalQuestions), font="Courier 70 italic", fill="#ff00aa")
 
-        self.canvas.create_window(300, 500, window=self.restartButton)
-        self.canvas.create_window(500, 550, window=self.quitButton)
+        self.canvas.create_window(300, 490, window=self.restartButton)
+        self.canvas.create_window(560, 570, window=self.quitButton)
 
 class processes(windowSetup):
     def __init__(self):
         windowSetup.__init__(self)
         self.welcomeScreen()
 
-        self.totalQuestion = 0
-        self.score = 0
-
     def gameStart(self):
+        self.score = 0
         if self.settingCheck():
             if self.modeVar.get() == 1:
-                self.totalQuestion = 10
-                for n in range(1, self.totalQuestion+1):
+                for n in range(1, 11):
                     self.windowSequence(n)
-                self.finalScreen(self.score, self.totalQuestion)
-            elif self.modeVar.get() == 0:
-                self.totalQuestion = 0
+                self.finalScreen(self.score, 10)
+            elif self.modeVar.get() == 2:
+                questionNo = 0
                 while 1:
-                    self.totalQuestion += 1
-                    self.windowSequence(self.totalQuestion)
+                    questionNo += 1
+                    self.windowSequence(questionNo)
 
     def windowSequence(self, questionNumber):
         self.inputBox.delete(0, "end")
-        question=self.questionCaller()
-        self.questionScreen(question, questionNumber)
+        self.questionCaller()
+        self.questionScreen(self.question, questionNumber)
         while 1:
             self.inputButton.wait_variable(self.inputVar)
             if self.inputCheck(self.inputVar.get()):
                 break
             continue
 
-        self.answerScreen(question=question,
+        self.answerScreen(question=self.question,
                             uInput=self.inputVar.get(),
-                            correct=self.answerCheck(question=question, input=self.inputVar.get())
+                            correct=self.answerCheck(question=self.question, input=self.inputVar.get())
                           )
         self.nextButton.wait_variable(self.nextVar)
 
     def settingCheck(self):
         self.setting = {"addition":self.addVar.get(), "subtraction":self.subVar.get(), "multiplication":self.multVar.get()}
 
-        # Dictionary of enabled settings
+        # Dictionary of enabled settings, set to 0 to denote that the question type has not been asked
         self.sDict = {variable: 0 for variable in self.setting if self.setting[variable]}
 
-        print(self.sDict)
         if len(self.sDict) == 0:
             self.canvas.create_text(
                                     300, 440, fill="#ff0000",
@@ -224,10 +231,16 @@ class processes(windowSetup):
                                     font="Courier 15", fill="#ff0000"
                                     )
             return(0)
+        if len(input) > 12:
+            self.canvas.create_text(
+                                    300, 435, text="Cannot be longer than 12 digits",
+                                    font="Courier 15", fill="#ff0000"
+                                    )
+            return(0)
         return(1)
 
     def answerCheck(self, input, question):
-        if eval(question) != int(input):
+        if eval(question) != eval(input):
             return(0)
         self.score += 1
         return(1)
@@ -246,8 +259,6 @@ class processes(windowSetup):
             self.subCreator()
         elif nextQuestion == "multiplication":
             self.multCreator()
-
-        return(self.question)
 
     def addCreator(self):
         self.question = "{}+{}".format(randint(10, 99), randint(2, 99))
