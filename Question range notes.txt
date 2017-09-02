@@ -13,8 +13,14 @@ Question types:
 	Must ensure that at least one question from each of the ticked catagories are available
 	
 	Addition
-		Limited to 0..99, 0..99, ans range of 0..198
+		Limited to 10..99, 2..99, ans range of 13..198
+		single digit addition is a bit easy so limiting first number to start at 10
+		adding 1 to values is a easy, so limiting second number to start at 2
+		limiting both numbers to 99 maximum
+		
 	Subtraction
 		Limited to 10..99, 5..98 where fNumber > secondNumber. ans range of 0..94
+		single number subraction is too easy, limiting first number to start at 10
+		subtracting 1, 2, 3, 4 is too easy, limiting first number to start at 5
 	Multiplication
-	Limited to single digit multiplication. ans range of 0..81
+	Limited to single digit multiplication except 0. ans range of 1..81
