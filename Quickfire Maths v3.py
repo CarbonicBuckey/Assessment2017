@@ -40,8 +40,17 @@ class windowSetup():
 
         # Creating the radio buttons & label
         self.rLabel = Label(self.rFrame, bg="#7ad7ff", text="Please choose a mode", font="Courier 12 italic")
-        self.roundButton = Radiobutton(self.rFrame, bg="#7ad7ff", text="Round Mode", font="Courier 10", variable=self.modeVar, value=1)
-        self.unlimitedButton = Radiobutton(self.rFrame, bg="#7ad7ff", text="Unlimited Mode", font="Courier 10", variable=self.modeVar, value=2)
+        self.roundEntry = Entry(self.rFrame, width=2)
+        self.rEntryLabel = Label(self.rFrame, text="No. Rounds:", font="Courier 8 italic", bg="#7ad7ff")
+        self.roundButton = Radiobutton(self.rFrame, bg="#7ad7ff",
+                                       text="Round Mode", font="Courier 10",
+                                       variable=self.modeVar, value=1,
+                                       command=lambda: self.roundEntry.config(state=NORMAL))
+
+        self.unlimitedButton = Radiobutton(self.rFrame, bg="#7ad7ff",
+                                           text="Unlimited Mode", font="Courier 10",
+                                           variable=self.modeVar, value=2,
+                                           command=lambda: self.roundEntry.config(state=DISABLED))
 
         # Creating the check buttons & label
         self.cLabel = Label(self.cFrame, bg="#7ad7ff", text="Please choose question types", font="Courier 12 italic")
@@ -54,19 +63,33 @@ class windowSetup():
                                   bg="#7ad7ff", relief=GROOVE,
                                   text="START", font="Courier 20",
                                   width=10,
-                                  command=self.gameStart
+                                  command=None
                                   )
 
         # Packing the radio buttons & labels
-        self.rLabel.pack(side=TOP)
-        self.roundButton.pack(side=LEFT)
-        self.unlimitedButton.pack(side=LEFT)
+        self.rLabel.grid(row=0, column=0, columnspan=3)
+        self.roundButton.grid(row=1, column=0, columnspan=2, sticky=W)
+
+        self.roundEntry.grid(row=2, column=1, padx=5, pady=7)
+        self.rEntryLabel.grid(row=2, column=0)
+
+        self.unlimitedButton.grid(row=1, column=2, padx=20)
 
         # Packing the check buttons & labels
-        self.cLabel.pack(side=TOP)
-        self.addButton.pack(side=LEFT)
-        self.subButton.pack(side=LEFT)
-        self.multButton.pack(side=LEFT)
+        self.cLabel.grid(row=0, column=0, columnspan=3)
+        self.addButton.grid(row=1, column=0)
+        self.subButton.grid(row=1, column=1)
+        self.multButton.grid(row=1, column=2)
+
+        # Error Messages
+        self.gameTypeError = Label(self.cFrame,
+                                   text="You must choose at least one", font="Courier 15",
+                                   foreground="#ff0000", bg="#7ad7ff"
+                                   )
+        self.roundEntryError = Label(self.rFrame,
+                                     text="Must be an integer\nCannot be greater than 20", font="Courier 8",
+                                     foreground="#ff0000", bg="#7ad7ff"
+                                     )
 
         ########## questionScreen() WIDGETS ##########
         self.inputVar = StringVar()
@@ -95,8 +118,12 @@ class windowSetup():
                                   bg="#7ad7ff", relief=GROOVE,
                                   text="restart?", font="Courier 20",
                                   width=10,
-                                  command=self.welcomeScreen
+                                  command=None
                                   )
+
+        ########## overlay() WIDGETS ##########
+
+        self.welcomeScreen()
 
     def welcomeScreen(self):  # method to display the welcome screen
         """
@@ -174,18 +201,30 @@ class windowSetup():
         self.canvas.create_window(300, 490, window=self.restartButton)
         self.canvas.create_window(560, 570, window=self.quitButton)
 
+    def overlay(self, event):
+        pass
+
+    def overlayRemove(self, event):
+        print(1, event)
+
 class processes(windowSetup):
     def __init__(self):
         windowSetup.__init__(self)
+
+        self.startButton.config(command=self.gameStart)
+        self.restartButton.config(command=self.welcomeScreen)
+
         self.welcomeScreen()
 
     def gameStart(self):
+        self.canvas.bind("<Button-2>", self.overlay)
+        self.canvas.bind("<ButtonRelease-2>", self.overlayRemove)
         self.score = 0
         if self.settingCheck():
             if self.modeVar.get() == 1:
-                for n in range(1, 11):
+                for n in range(1, int(self.roundEntry.get())+1):
                     self.windowSequence(n)
-                self.finalScreen(self.score, 10)
+                self.finalScreen(self.score, int(self.roundEntry.get()))
             elif self.modeVar.get() == 2:
                 questionNo = 0
                 while 1:
@@ -209,18 +248,38 @@ class processes(windowSetup):
         self.nextButton.wait_variable(self.nextVar)
 
     def settingCheck(self):
-        self.setting = {"addition":self.addVar.get(), "subtraction":self.subVar.get(), "multiplication":self.multVar.get()}
+        validSetting = 1
+        if self.modeVar.get() == 1:
+            try:
+                int(self.roundEntry.get())
+            except:
+                self.roundEntryError.grid(row=2, column=2)
+                validSetting = 0
+            else:
+                if int(self.roundEntry.get()) > 20 or int(self.roundEntry.get()) == 0:
+                    self.roundEntryError.grid(row=2, column=2)
+                    validSetting = 0
 
+        elif self.modeVar.get() == 2:
+            if self.roundEntryError in self.rFrame.winfo_children():
+                self.roundEntryError.grid_forget()
+
+
+        self.settings = {"addition":self.addVar.get(), "subtraction":self.subVar.get(),
+                         "multiplication":self.multVar.get()
+                         }
         # Dictionary of enabled settings, set to 0 to denote that the question type has not been asked
-        self.sDict = {variable: 0 for variable in self.setting if self.setting[variable]}
+        self.sDict = {variable: 0 for variable in self.settings if self.settings[variable]}
 
         if len(self.sDict) == 0:
-            self.canvas.create_text(
-                                    300, 440, fill="#ff0000",
-                                    text="You must choose at least one", font="Courier 15"
-                                    )
-            return(0)
-        return(1)
+            self.gameTypeError.grid(row=3, column=0, columnspan=3)
+            validSetting = 0
+
+        else:
+            if self.gameTypeError in self.cFrame.winfo_children():
+                self.gameTypeError.grid_forget()
+
+        return(validSetting)
 
     def inputCheck(self, input):
         try:
