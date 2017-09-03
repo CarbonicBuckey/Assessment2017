@@ -122,6 +122,13 @@ class windowSetup():
                                   )
 
         ########## overlay() WIDGETS ##########
+        self.overlayFrame = Frame(self.window,
+                                  bg="#c9efff",
+                                  width=500, height=490
+                                  )
+
+        self.noneError = Label(self.overlayFrame, text="You have yet to answer any questions", font="Courier 15 italic",
+                               bg="#c9efff")
 
         self.welcomeScreen()
 
@@ -201,11 +208,27 @@ class windowSetup():
         self.canvas.create_window(300, 490, window=self.restartButton)
         self.canvas.create_window(560, 570, window=self.quitButton)
 
-    def overlay(self, event):
-        pass
+    def overlayCreate(self, event):
+        for x, text in enumerate(["Question", "Your Answer", "Actual Answer"]):
+            Label(self.overlayFrame, text=text, font="Courier 10 italic", bg="#c9efff").grid(row=0, column=x)
+
+        if len(self.qaDict) == 0:
+            self.noneError.grid(row=1, columnspan=3, pady=200)
+
+        for y, question in enumerate(self.qaDict):
+            self.noneError.grid_forget()
+            colour = "#9effb0" if self.qaDict[question][1] else "#ff9ead"
+            displayList = [question, self.qaDict[question][0], eval(question)]
+
+            for x, values in enumerate(displayList):
+                Label(self.overlayFrame, text=values, bg=colour, height=1, width=19, font="Courier 10 italic").grid(row=y+1, column=x, pady=0)
+
+        self.overlayFrame.grid_propagate(0)
+        self.overlayFrame.grid_anchor(N)
+        self.overlay = self.canvas.create_window(300, 300, window=self.overlayFrame)
 
     def overlayRemove(self, event):
-        print(1, event)
+        self.canvas.delete(self.overlay)
 
 class processes(windowSetup):
     def __init__(self):
@@ -217,19 +240,33 @@ class processes(windowSetup):
         self.welcomeScreen()
 
     def gameStart(self):
-        self.canvas.bind("<Button-2>", self.overlay)
-        self.canvas.bind("<ButtonRelease-2>", self.overlayRemove)
+
+        for widget in self.overlayFrame.winfo_children():
+            widget.grid_forget()
+
         self.score = 0
+        self.qaDict = {}
+
+        self.canvas.bind("<Button-2>", self.overlayCreate)
+        self.canvas.bind("<ButtonRelease-2>", self.overlayRemove)
+
         if self.settingCheck():
             if self.modeVar.get() == 1:
                 for n in range(1, int(self.roundEntry.get())+1):
                     self.windowSequence(n)
                 self.finalScreen(self.score, int(self.roundEntry.get()))
             elif self.modeVar.get() == 2:
+                self.canvas.unbind("<Button-2>")
+                self.canvas.unbind("<ButtonRelease-2>")
+
                 questionNo = 0
                 while 1:
                     questionNo += 1
                     self.windowSequence(questionNo)
+
+        else:
+            self.canvas.unbind("<Button-2>")
+            self.canvas.unbind("<ButtonRelease-2>")
 
     def windowSequence(self, questionNumber):
         self.inputBox.delete(0, "end")
@@ -240,11 +277,14 @@ class processes(windowSetup):
             if self.inputCheck(self.inputVar.get()):
                 break
             continue
-
+        correctOrFalse = self.answerCheck(question=self.question, input=self.inputVar.get())
         self.answerScreen(question=self.question,
                             uInput=self.inputVar.get(),
-                            correct=self.answerCheck(question=self.question, input=self.inputVar.get())
-                          )
+                            correct=correctOrFalse
+                            )
+
+        self.qaDict[self.question] = [self.inputVar.get(), correctOrFalse]
+
         self.nextButton.wait_variable(self.nextVar)
 
     def settingCheck(self):
