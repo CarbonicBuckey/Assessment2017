@@ -95,6 +95,13 @@ class windowSetup():
                                   command=None
                                   )
 
+        self.tip = Label(self.window,  # Creating tip
+                         text="Tip:\n"
+                              "You can check your score in round mode\n"
+                              "at any time by presssing Right Click",
+                         font="Courier 10", bg="#7ad7ff"
+                         )
+
         # Packing the radio buttons & labels
         self.rLabel.grid(row=0, column=0, columnspan=3)
         self.roundButton.grid(row=1, column=0, columnspan=2, sticky=W)
@@ -124,7 +131,6 @@ class windowSetup():
         # Importing background images
         self.correctImage = PhotoImage(file="correct_screen.gif")
         self.falseImage = PhotoImage(file="false_screen.gif")
-
 
         self.nextVar = IntVar()  # Dummy variable to be used to stop the program for nextButton
         self.nextButton = Button(self.window,  # Button to move onto the next question
@@ -182,21 +188,21 @@ class windowSetup():
                                bg="#c9efff"  # Lighter blue background
                                )
 
-
-        self.welcomeScreen()
-
     def welcomeScreen(self):
         """
         Method to display the welcome screen
         MUST BE INITIALISED FIRST
         """
         self.canvas.delete("all")  # Clear the screen
+        self.roundEntryError.grid_forget()
 
         self.canvas.create_image(300, 300, image=self.bImage)  # Displaying the background image
         self.canvas.create_text(300, 50, text="Welcome to Quick Maths", font="Courier 30 italic", fill="#ff0000")
 
         self.canvas.create_window(300, 300, window=self.rFrame)  # Displaying the radio buttons
         self.canvas.create_window(300, 400, window=self.cFrame)  # Displaying the check buttons
+
+        self.canvas.create_window(180, 140, window=self.tip)  # Displaying a tip
 
         self.roundEntry.config(state=NORMAL)  # Activating the entry box
         self.canvas.create_window(300, 490, window=self.startButton)  # Displaying the start button
@@ -232,8 +238,6 @@ class windowSetup():
         Takes a question in terms of a string, uInput in terms of a string, and correct in terms of a boolean
         """
         self.canvas.delete("all")  # Clear the screen
-
-        colour=None
 
         if correct:  # If user is correct, display the correct background and text
             self.canvas.create_image(300, 300, image=self.correctImage)
