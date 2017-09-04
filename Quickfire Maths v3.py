@@ -12,8 +12,7 @@ class windowSetup():
         """
         ########## General Stuff ##########
         self.window = Tk()
-        self.window.config()
-        self.window.title("Quick Fire Maths")
+        self.window.title("Quickfire Maths")
 
         self.canvas = Canvas(self.window, width=600, height=600)  # Creating a canvas
         self.canvas.pack()
@@ -144,7 +143,7 @@ class windowSetup():
                                   )
 
         ########## overlayCreate() WIDGETS ##########
-        self.overlayFrame = Frame(self.window,  #Frame to house all the labels for the overlay
+        self.overlayFrame = Frame(self.window,  # Frame to house all the labels for the overlay
                                   bg="#c9efff",
                                   width=500, height=490
                                   )
@@ -165,10 +164,21 @@ class windowSetup():
                                      foreground="#ff0000", bg="#7ad7ff"  # Red text on Light blue background
                                      )
 
+        # questionScreen()
+        self.inputError = Label(self.window,
+                                text="Incorrect Input",  # If it can't be integers
+                                font="Courier 15",
+                                foreground="#ff0000", bg="#7ad7ff"
+                                )
+        self.tooLongError = Label(self.window,
+                                  text="Cannot be longer than 12 digits",
+                                  font="Courier 15", foreground="#ff0000", bg="#7ad7ff"
+                                  )
+
         # overlayCreate()
         self.noneError = Label(self.overlayFrame, # Error message: display if there are no results
                                text="You have yet to answer any questions",
-                               font="Courier 15 italic",
+                               font="Courier 10 italic",
                                bg="#c9efff"  # Lighter blue background
                                )
 
@@ -401,9 +411,11 @@ class processes(windowSetup):
         Method to check validity of settings
         """
         validSetting = 1  # Assume setting is correct
-        self.settings = {"addition":self.addVar.get(), "subtraction":self.subVar.get(),
+        # Create dictionary of game types and the output of the corresponding radio buttons
+        self.settings = {"addition":self.addVar.get(),
+                         "subtraction":self.subVar.get(),
                          "multiplication":self.multVar.get()
-                         }  # Create dictionary of game types and the output of the corresponding radio buttons
+                         }
         # Dictionary of enabled settings, set to 0 to denote that the question type has not been asked
         self.sDict = {variable: 0 for variable in self.settings if self.settings[variable]}
 
@@ -441,21 +453,17 @@ class processes(windowSetup):
         try:  # Check if input can be turned into a string
             int(input)
         except:
-            self.canvas.create_text(300, 360, text="Incorrect Input",  # If it can't be integerised
-                                    font="Courier 15", fill="#ff0000"
-                                    )
+            self.canvas.create_window(300, 360, window=self.inputError)  # Display input error
             return(0)  # Stop, and return false
         if len(input) > 12:
-            self.canvas.create_text(300, 435, text="Cannot be longer than 12 digits",
-                                    font="Courier 15", fill="#ff0000"
-                                    )
+            self.canvas.create_window(300, 435, window=self.tooLongError)  # Display too long error
             return(0)  # Stop, and return false
         return(1)  # Stop, and return true
 
     def answerCheck(self, input, question):
         """
         Method to check answer
-        Takes userinput and question. both as str
+        Takes user input and question. both as str
         """
         if eval(question) != eval(input):  # if uInput is not correct
             return(0)  # Return false
