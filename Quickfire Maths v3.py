@@ -143,7 +143,7 @@ class windowSetup():
         ########## finalScreen() WIDGETS ##########
         self.restartButton = Button(self.window,  # Button to restart game (Command will be configured in process class)
                                   bg="#7ad7ff", relief=GROOVE,
-                                  text="restart?", font="Courier 20",
+                                  text="Restart?", font="Courier 20",
                                   width=10,
                                   command=None
                                   )

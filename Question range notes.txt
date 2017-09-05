@@ -19,7 +19,7 @@ Question types:
 		limiting both numbers to 99 maximum
 		
 	Subtraction
-		Limited to 10..99, 5..98 where fNumber > secondNumber. ans range of 0..94
+		Limited to 10..99, 5..98 where fNumber > secondNumber. ans range of 1..94
 		single number subraction is too easy, limiting first number to start at 10
 		subtracting 1, 2, 3, 4 is too easy, limiting first number to start at 5
 	Multiplication
