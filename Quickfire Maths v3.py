@@ -423,7 +423,7 @@ class processes(windowSetup):
         # Dictionary of enabled settings, set to 0 to denote that the question type has not been asked
         self.sDict = {variable: 0 for variable in self.settings if self.settings[variable]}
 
-        if self.modeVar.get() == 1:  # if round mode (overlay should not work in unlimited
+        if self.modeVar.get() == 1:  # if round mode (overlay should not work in unlimited)
             try:
                 int(self.roundEntry.get())  # Check if round input can be integer
             except:  # If not, display error
