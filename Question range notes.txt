@@ -13,7 +13,7 @@ Question types:
 	Must ensure that at least one question from each of the ticked catagories are available
 	
 	Addition
-		Limited to 10..99, 2..99, ans range of 13..198
+		Limited to 10..99, 2..99, ans range of 12..198
 		single digit addition is a bit easy so limiting first number to start at 10
 		adding 1 to values is a easy, so limiting second number to start at 2
 		limiting both numbers to 99 maximum

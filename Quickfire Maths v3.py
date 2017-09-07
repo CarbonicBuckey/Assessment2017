@@ -40,11 +40,8 @@ class windowSetup():
         self.subVar = IntVar()
         self.multVar = IntVar()
 
-        # Setting the default value of radio buttons
-        self.modeVar.set(1)
-
-        # Setting the default value of check buttons
-        self.addVar.set(1)
+        self.modeVar.set(1)# Setting the default value of radio buttons
+        self.addVar.set(1)# Setting the default value of check buttons
         self.subVar.set(1)
         self.multVar.set(1)
 
@@ -151,7 +148,7 @@ class windowSetup():
         ########## overlayCreate() WIDGETS ##########
         self.overlayFrame = Frame(self.window,  # Frame to house all the labels for the overlay
                                   bg="#c9efff",
-                                  width=500, height=490
+                                  width=500, height=500
                                   )
 
         ########## Error Messages ##########
@@ -313,14 +310,15 @@ class windowSetup():
 
         self.overlayFrame.grid_propagate(0)  # Ensuring that the frame is of the specified size
         self.overlayFrame.grid_anchor(N)  # Centering the grid
-        self.overlay = self.canvas.create_window(300, 300, window=self.overlayFrame)  #Displaying the frame
+        self.overlayFrame.place(x=50, y=50)
+        self.overlayFrame.lift(aboveThis=None)
 
     def overlayRemove(self, event):
         """
         Method to remove the overlay created by overlayCreate()
         Is called by a bind, requires an unused event
         """
-        self.canvas.delete(self.overlay)  # hide the frame
+        self.overlayFrame.place_forget()  # hide the frame
 
 class processes(windowSetup):
     """
@@ -434,6 +432,8 @@ class processes(windowSetup):
                 if int(self.roundEntry.get()) > 20 or int(self.roundEntry.get()) < len(self.sDict):
                     self.roundEntryError.grid(row=2, column=2)
                     validSetting = 0
+                else:
+                    self.roundEntryError.grid_forget()
 
         elif self.modeVar.get() == 2:  # If unlimited mode destroy round error message
             if self.roundEntryError in self.rFrame.winfo_children():
